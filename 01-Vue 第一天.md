@@ -756,7 +756,7 @@ Object.defineProperty(a, 'age', {
 
 ###  Vue中的数据代理
 
-
+> `data`中所配置的属性，就是通过数据代理，最终都出现在了`vm`身上。
 
 **知识点：**
 
