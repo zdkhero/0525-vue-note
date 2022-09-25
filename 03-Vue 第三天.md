@@ -618,6 +618,8 @@ computed 版本：
 
 **知识点**
 
+
+
 写法 `:style="xxx"`，其中的 `xxx` 也可以是：字符串、对象、数组。
 
 1. 字符串写法：很少使用 ——了解即可。
@@ -895,6 +897,47 @@ computed 版本：
 
 
 
+1. 为什么要有数据代理
+
+   ```
+   new Vue({
+    data: {}
+   })
+   
+   function Vue(options) {
+   
+     this._data = options.data
+   
+   }
+   
+   <div>{{ _data.name }}</div>
+   
+   使用 vm 对 _data 对象中的属性进行操作(读/写)
+   ```
+
+   
+
+2. Vue 如何做数据代理
+
+   ```
+   Object.defineProperty()
+   
+   只要代理完成后，vm 身上就有了 _data 中的数据
+   
+   <div>{{ name }}</div>
+   
+   在 vm 身上的数据有
+   
+   getter
+   setter
+   ```
+
+   
+
+
+
+
+
 ###  5.2 什么是数据劫持
 
 
@@ -921,6 +964,44 @@ computed 版本：
 
 
 答案：就是为了捕获数据的改变，捕获数据改变后视图更新，
+
+
+
+```js
+let _data = {
+  name: '韦东奕',
+  school: '北京大学'
+}
+
+// _data.name = '22222'
+// _data.name = '333'
+// _data.name = '444'
+
+
+// 假如把 _data 里面的 name 更改了，如果不使用 Object.defineProperty 如何监听是否改变
+// 可以发现，如果不通过 Object.defineProperty 去进行监听，使用其他方式检测不到数据改变的
+// setTimeout(() => {
+//   if (_data.name !== '韦东奕') {
+//     console.log('数据改变了')
+//   }
+// }, 1000)
+
+Object.defineProperty(_data, 'name', {
+  get () {
+    return '韦东奕'
+  },
+
+  set() {
+    console.log('你改变数据了~~~~')
+  }
+})
+
+_data.name = '22222'
+_data.name = '333'
+_data.name = '444'
+```
+
+
 
 
 
@@ -955,27 +1036,250 @@ computed 版本：
 
 
 
+### 5.4 数据劫持源码(拓展阅读 )
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+
+<body>
+
+  <script>
+
+    // ------------------------------------------------------
+    // ----------------  以下代码为数据代理 -------------------
+    // ------------------------------------------------------
+
+    // 创建 Vue 构造函数，options 是用户传递的配置项
+    function Vue(options) {
+      // 通过 $options 属性保存配置选项选项的数据
+      // this.$options = options || {}
+      // 收集配置想中数据
+      this._data = options.data || {}
+      // 将 data 中的成员转换成 getter 和 setter，并注入到 Vue 实例中
+      this._proxyData(this._data)
+
+      new Observer(this._data)
+    }
+
+    // 将 data 中的数据转换成 getter 和 setter 注入到 vue 实例 vm 身上
+    Vue.prototype._proxyData = function (_data) {
+      // 遍历 data 中的所有的属性，将 data 中每个属性，都放到 vm 上
+      Object.keys(_data).forEach(key => {
+        // 把 data 中的数据都注入到实例中
+        Object.defineProperty(this, key, {
+          enumerable: true,
+          configurable: true,
+          get() {
+            return _data[key]
+          },
+          set(newValue) {
+            if (newValue === _data[key]) return
+            _data[key] = newValue
+          }
+        })
+      })
+    }
 
 
-## 6. Vue 检测数组改变的原理
+    // ------------------------------------------------------
+    // ----------------  以下代码为数据劫持 -------------------
+    // ------------------------------------------------------
+    function Observer(data) {
+      // 方法作用：遍历 data 中所有的属性，因此参数是 data 对象
+      this.walk(data)
+    }
+
+    // 遍历 data 中所有的属性，因此参数是 data 对象
+    Observer.prototype.walk = function (data) {
+      // 判断需要监听的 data 是否为对象
+      if (!data || typeof data !== 'object') return
+
+      // 遍历 data 对象的所有属性
+      Object.keys(data).forEach(key => {
+        this.defineReactive(data, key, data[key])
+      })
+    }
+
+    // 大名鼎鼎的数据劫持!!!!
+    Observer.prototype.defineReactive = function (obj, key, val) {
+      let that = this
+      // 如果 data 中的数据是一个对象
+      // 即如果 val 是对象，就需要把 val 内部的属性转换成响应式数据
+      this.walk(val)
+
+      Object.defineProperty(obj, key, {
+        enumerable: true,
+        configurable: true,
+        get() {
+          return val
+        },
+        set(newValue) {
+          if (newValue === val) return
+          val = newValue
+
+          // 对 data 中的属性重新赋值，例如：赋值成一个对象
+          // 将动态设置的对象中属性值转换为 getter / setter
+          that.walk(val)
+        }
+      })
+    }
+
+
+    const vm = new Vue({
+      data: {
+        name: '亚瑟',
+        age: 10,
+        obj: { name: '亚瑟' }
+      }
+    })
+
+    console.log(vm)
+  </script>
+</body>
+
+</html>
+```
 
 
 
-**知识点**
-
-由于 JavaScript 的限制，Vue **不能检测**数组和对象的变化，数组可以用`defineProperty`进行监听。但是考虑性能原因，没有使用 `defineProperty`进行监听。
-
-试想数组一万条数据，对每一项都循环监听，性能会变的非常差，所以没有使用 `Object.defineProperty` 对数组每一项进行拦截，而是选择了将能够引起数组变更的方法进行了包裹、进行了重写。
 
 
 
-### 6.1 变更方法
 
-1. 通过包裹数组的`7`个变更方法实现，本质就是做了两件事：
 
-​		① 调用原生对应的方法对数组进行更新。
 
-​		② 重新解析模板，进而更新页面。
+## 6. Vue 检测对象的变化的原理
+
+
+
+**知识点：**
+
+
+
+**由于 `JavaScript` 的限制，`Vue` 不能检测数组和对象的变化。**
+
+
+
+对于对象而言，`Vue` 无法检测属性中的添加或移除，
+
+1. 因为 `Vue` 只会在**初始化实例时对属性 执行 `getter/setter` 转化**
+2. 也就是说 **属性必须在 `data` 对象上存在才能让 Vue 将它转换为响应式的**
+
+
+
+例如：以下代码，在 methods 中写了新增和删除，Vue 都是检测不到的！
+
+```js
+const vm = new Vue({
+  el: '#app',
+  data: {
+    obj: {
+      name: '安琪拉',
+      gender: '女'
+    }
+  },
+  methods: {
+    addAge () {
+      // 新增一个属性检测不到，Vue 检测不到
+      // this.obj['age'] = 10
+
+      // 删除一个属性也检测不到，Vue 也检测不到
+      delete this.obj['gender']
+
+    }
+  }
+})
+```
+
+
+
+那么 `Vue` 如何给新增或者删除的元素进行响应式处理呢 ❓
+
+```
+Vue.set()
+
+vm.$set()
+```
+
+
+
+```js
+Vue.set(vm.obj, 'age', 10)
+
+vm.$set(vm.obj, 'age', 10)
+
+this.$set(this.obj, 'age', 10)
+```
+
+
+
+
+
+
+
+
+
+## 7. Vue 检测数组改变的原理
+
+
+
+**知识点：**
+
+
+
+**由于 `JavaScript` 的限制，`Vue` 不能检测数组和对象的变化。**
+
+
+
+Vue 不能检测以下数组的变动：
+
+1. 当你利用索引直接设置一个数组项时，例如：`vm.items[indexOfItem] = newValue`
+2. 当你修改数组的长度时，例如：`vm.items.length = newLength`
+
+```js
+const vm = new Vue({
+  el: '#app',
+  data: {
+    hobby: ['吃饭', '睡觉', '打 Jerry']
+  },
+  methods: {
+    addAge () {
+      // 不是响应性的
+      // this.hobby[0] = '打王者'
+
+      // 不是响应式的
+      // this.hobby.length = 100
+
+      this.$set(this.hobby, 0, '打王者')
+    }
+  }
+})
+```
+
+
+
+
+
+
+
+
+
+### 7.1 变更方法
+
+
+
+变更方法，顾名思义，会变更调用了这些方法的原始数组，Vue 通过包裹数组的`7`个变更方法实现，本质就是做了两件事：
+
+1. 调用原生对应的方法对数组进行更新。
+2. 重新解析模板，进而更新页面。
 
 
 
@@ -984,10 +1288,6 @@ computed 版本：
 > `push()`、`pop()`、`shift()`、`unshift()`、`splice()`、`sort()`、`reverse()`
 
 
-
-
-
-### 
 
 **落地代码：**
 
@@ -1059,6 +1359,37 @@ computed 版本：
 
 
 
+
+
+
+
+
+### 7.2 set 方法的使用
+
+
+
+```js
+const vm = new Vue({
+  el: '#app',
+  data: {
+    hobby: ['吃饭', '睡觉', '打 Jerry']
+  },
+  methods: {
+    addAge () {
+      // 不是响应性的
+      // this.hobby[0] = '打王者'
+
+      // 不是响应式的
+      // this.hobby.length = 100
+
+      this.$set(this.hobby, 0, '打王者')
+    }
+  }
+})
+
+Vue.set(vm.hobby, 0, '打王者')
+vm.$set(vm.hobby, 0, '打王者')
+```
 
 
 
