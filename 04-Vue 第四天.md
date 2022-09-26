@@ -1012,331 +1012,149 @@ Vue.js 允许你自定义过滤器，可被用于一些常见的文本格式化�
 
 
 
-##6. 组件基础-什么是组件
+
+
+## 6. Vue 中的动画(了解)
 
 
 
-###  6.1 什么是组件
+Vue 在插入、更新或者移除 DOM 时，提供多种不同方式的应用过渡效果，最常使用的方式有两种：
 
-​		组件可以理解是页面中的一个最小单元，通常是指将一个界面或者一个功能模块所需要的 HTML、CSS、JS 封装成一个单独的文件。我们将一个完整的页面分成很多个组件，每个组件都拥有自己的独立逻辑，最终将各个组件进行组合完整的项目。
-
-
-
-通俗的讲：组件实现了应用中 局部功能 的代码和资源集合
-
-
-
-**传统方式编写应用**
-
-1. 按照功能去将 CSS、JS 拆分成一个个文件，来回实现复用
-2. HTML 很难实现复用
-3. 引用关系比较混乱，结构不清晰，不方便维护
-4. 引入文件的时候需要注意应用的顺序，否则会引起依赖错误
-
-
-
-<img src="C:/Users/15778/Desktop/Vue 备课/01-课程笔记/images/传统方式编写应用.png" style="zoom:60%;" />
-
-
-
-**组件方式编写应用**
-
-![](C:/Users/15778/Desktop/Vue 备课/01-课程笔记/images/使用组件方式编写应用.png)
-
-
-
-**如何组件的组织**
-
-通常一个应用会以一棵嵌套的组件树的形式来组织：例如，你可能会有页头、侧边栏、内容区等组件，每个组件又包含了其它的像导航链接、博文之类的组件。
-
-<img src="C:/Users/15778/Desktop/Vue 备课/01-课程笔记/images/components.png" style="zoom:80%; border: 1px solid #ccc" />
+1. 在 CSS 过渡和动画中自动应用 class
+2. 可以配合使用第三方 CSS 动画库，如 Animate.css
 
 
 
 
 
+### 14.1 Vue 过渡动画的基本使用
 
 
 
-
-###  6.2 组件的分类
-
-
-
-**知识点：**
-
-在 Vue 中，组件分为两类：
-
-1. 非单文件组件：一个文件中可以存在多个组件，文件的后缀名是 `.html` 格式的
-2. 单文件组件：一个文件中只定义一个组件，文件后缀名是 `.vue`，每个单文件组件中有自己的 HTML、CSS、JS
+<img src="E:/Vue 备课/01-Vue 基础/01-课程笔记/images/animation.png" style="zoom:80%; border: 1px solid #ccc" />
 
 
 
 
 
-## 7. 组件基础-组件的基本使用
-
-> 🎯 目标：熟练非单文件组件的创建与使用的流程
-
-
-
-###  7.1 演示不使用组件的写法
-
-**案例效果：**
-
-​				<img src="C:/Users/15778/Desktop/Vue 备课/01-课程笔记/images/组件案例.png" style="zoom:60%; border: 1px solid #ccc" />
+1. Vue 提供了 `transition` 的封装组件，用来包裹需要执行动画的元素
+2. 同时提供了  6 个 class 的切换，在进入/离开的过渡中的时候进行执行
+   - `v-enter`：定义进入过渡的开始状态
+   - `v-enter-active`：定义进入过渡生效时的状态
+   - `v-enter-to`：定义进入过渡的结束状态
+   - `v-leave`：定义离开过渡的开始状态
+   - `v-leave-active`：定义离开过渡生效时的状态
+   - `v-leave-to`：定义离开过渡的结束状态
 
 
 
 
 
-**存在问题：**
+![](E:/Vue 备课/01-Vue 基础/01-课程笔记/images/动画效果.gif)
 
-1. 功能与功能之间没有明显的界限
-2. 数据、方法堆叠到一起，不方便后续的维护
-3. 不方便后期的复用
-
-
-
-**落地代码：**
-
-```html
-<!DOCTYPE html>
-<html lang="en">
-
-<head>
-  <meta charset="UTF-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>搭建 Vue 开发环境</title>
-</head>
-
-<body>
-
-  <div id="app">
-    <div>
-      <h2>学校信息</h2>
-      <h5>学校名称：{{ sname }}</h5>
-      <h5>学校地址：{{ address }}</h5>
-      <button @click="schoolInfo">弹出我的信息</button>
-    </div>
-    <hr>
-    <div>
-      <h2>学员信息</h2>
-      <h5>学校名称：{{ pname }}</h5>
-      <h5>学校地址：{{ age }}</h5>
-      <button @click="personInfo">弹出我的信息</button>
-    </div>
+```vue
+<template>
+  <div>
+    <button @click="isShow = !isShow">触发动画</button> <br /><br />
+    <transition>
+      <div v-if="isShow" class="box">隐藏和展示</div>
+    </transition>
   </div>
+</template>
 
-  <script src="../vue.js"></script>
-  <script>
-    Vue.config.productionTip = false
-
-    const vm = new Vue({
-      el: '#app',
-      data: {
-        sname: '北京大学',
-        address: '北京海淀区',
-        pname: '韦东奕',
-        age: '18'
-      },
-      methods: {
-        schoolInfo() {
-          alert(this.sname)
-        },
-        personInfo() {
-          alert(this.pname)
-        }
-      }
-    })
-  </script>
-</body>
-
-</html>
-```
-
-
-
-
-
-###  7.2 组件的使用流程步骤
-
-**知识点：**
-
-1. 使用 `Vue.extend(options)`，其中的 `options` 和 `new Vue(options)` 中的 `options` 几乎一样，但也有点小区别
-
-   - el 不要写，为什么 ❓    所有的组件，最终都有一个 vm 进行管理，由 vm 决定服务哪个容器，所有的组件都跟随 vm 走
-
-   - data 必须写成函数，为什么 ❓   避免组件后期复用时产生数据的干扰
-
-     
-
-2. 创建组件的三个步骤：
-
-   - 创建组件：使用`Vue.extend(options)`方法创建组件
-   - 注册组件：`new Vue({...})`时，使用`components`配置。
-   - 使用组件：在父组件的 Vue 模板中使用组件，只需将组件写成 标签 即可，例如：`<Person></Person> `
-
-
-
-
-
-**落地代码：**
-
-```html
-<!DOCTYPE html>
-<html lang="en">
-
-<head>
-  <meta charset="UTF-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>搭建 Vue 开发环境</title>
-</head>
-
-<body>
-
-  <div id="app">
-    <!-- 3. 使用组件 -->
-    <School></School>
-    <hr />
-    <Student></Student>
-  </div>
-
-  <script src="../vue.js"></script>
-  <script>
-    Vue.config.productionTip = false
-
-    // 1. 创建组件
-    // 创建学校组件
-    const School = Vue.extend({
-      template: `
-        <div>
-          <h2>学校信息</h2>
-          <h5>学校名称：{{ sname }}</h5>
-          <h5>学校地址：{{ address }}</h5>
-          <button @click="schoolInfo">弹出我的信息</button>
-        </div>
-      `,
-      data() {
-        return {
-          sname: '北京大学',
-          address: '北京海淀区',
-        }
-      },
-      methods: {
-        schoolInfo() {
-          alert(this.sname)
-        }
-      }
-    })
-
-    // 创建学员组件
-    const Student = Vue.extend({
-      template: `
-        <div>
-          <h2>学员信息</h2>
-          <h5>学校名称：{{ pname }}</h5>
-          <h5>学校地址：{{ age }}</h5>
-          <button @click="personInfo">弹出我的信息</button>
-        </div>
-      `,
-      data() {
-        return {
-          pname: '韦东奕',
-          age: '18'
-        }
-      },
-      methods: {
-        personInfo() {
-          alert(this.pname)
-        }
-      }
-    })
-
-    const vm = new Vue({
-      el: '#app',
-      // 注册组件
-      components: {
-        School,
-        Student
-      }
-    })
-  </script>
-</body>
-
-</html>
-```
-
-
-
-
-
-
-
-###  7.3 为什么 data 需要写成一个函数
-
-**知识点**
-
-data 需要写成一个函数，是为了避免组件后期复用时 共用一个data，产生数据之间相互影响
-
-
-
-**原因：**
-
-对象本身是一个引用数据类型，当同一个组件被多次使用时，实际上引用的是同一个地址，因此只要某一个组件数据发生更改，那么会直接影响到其他组件数据，不利于组件的复用
-
-写成函数写法可以避免这种问题的产生，是函数中每一次都会返回一个全新的对象，这样多次使用组件时，每一次都是一个全新的对象地址，不会发生数据同步问题
-
-
-
-**演示写成对象形式**
-
-```js
-// 对象本身是一个引用数据类型，
-// 当同一个组件被多次使用时，实际上引用的是同一个地址，
-// 因此只要某一个组件数据发生更改，那么会直接影响到其他组件数据，不利于组件的复用
-let obj = {
-  pname: '韦东奕',
-  age: '18'
-}
-
-// a 组件
-const a = obj
-
-// b 组件
-const b = obj
-
-a.pname = '韦神'
-
-console.log(b.pname)
-```
-
-
-
-**演示写成函数形式**
-
-```js
-// 函数中每一次都会返回一个全新的对象
-// 这样多次使用组件时，每一次都是一个全新的对象地址，不会发生数据同步问题
-let obj = () => {
-  return {
-    pname: '韦东奕',
-    age: '18'
+<script>
+export default {
+  name: 'App',
+  data() {
+    return {
+      isShow: true
+    }
   }
 }
+</script>
 
-// a 组件
-const a = obj()
+<style scoped>
+.box {
+  width: 300px;
+  height: 40px;
+  background-color: lightcoral;
+  transition: all 0.8s linear;
+}
 
-// b 组件
-const b = obj()
+.v-enter,
+.v-leave-to {
+  opacity: 0;
+  transform: translate(-200px);
+}
+.v-enter-to,
+.v-leave {
+  opacity: 1;
+  transform: translate(0px);
+}
+</style>
 
-a.pname = '韦神'
+```
 
-console.log(a.pname)
-console.log(b.pname)
+
+
+
+
+
+
+### 14.3 Vue 过渡动画结合 animate.css 使用
+
+
+
+我们可以通过 `Vue` 提供的过渡属性来实现自定义动画
+
+
+
+- `enter-class`
+
+- `enter-active-class`
+- `enter-to-class` 
+- `leave-class`
+- `leave-active-class`
+- `leave-to-class`
+
+
+
+![](E:/Vue 备课/01-Vue 基础/01-课程笔记/images/animate 动画.gif)
+
+
+
+```vue
+<template>
+  <div>
+    <button @click="isShow = !isShow">触发动画</button> <br /><br />
+    <transition
+       enter-to-class="animate__animated animate__shakeX"
+       leave-to-class="animate__animated animate__shakeY"
+    >
+      <div v-if="isShow" class="box">隐藏和展示</div>
+    </transition>
+  </div>
+</template>
+
+<script>
+export default {
+  name: 'App',
+  data() {
+    return {
+      isShow: true
+    }
+  }
+}
+</script>
+
+<style scoped>
+.box {
+  width: 300px;
+  height: 40px;
+  background-color: lightcoral;
+}
+</style>
+
 ```
 
 
@@ -1347,9 +1165,4 @@ console.log(b.pname)
 
 
 
-
-
-
-
-
-
+\
