@@ -891,7 +891,7 @@ vue create hello-world
 │   ├── assets: 存放公共静态资源（公用的：图片、字体等等）
 │   │   └── logo.png
 │   │ 
-│   │── components: 存放组件
+│   │── components: 存放公共组件
 │   │   └──HelloWorld.vue
 │   │ 
 │   │── App.vue: 汇总所有组件
@@ -1026,7 +1026,7 @@ import Vue from 'vue/dist/vue'
 
 1. **完整版**：同时包含 `编译器` 和 `运行时` 的版本
    - 例如：`vue.js`、`vue.min.js` 、`vue.common.js`、`vue.esm.js`
-2. **运行时**：用来创建 Vue 实例、渲染并处理虚拟 DOM 等的代码，体积小、效率高，基本上就是除
+2. **运行时版**：用来创建 Vue 实例、渲染并处理虚拟 DOM 等的代码，体积小、效率高，基本上就是除
    去编译器的代码
    - `vue.runtime.js`、`vue.runtime.common.js`、`vue.runtime.esm.js`
 3. **编译器**：用来将模板字符串编译成为 JavaScript 渲染函数的代码，体积大、效率低
@@ -1049,7 +1049,7 @@ import Vue from 'vue/dist/vue'
 
 
 
-**4. 运行时 + 编译器  VS 只包含运行时**
+**4. 运行时 + 编译器(完整版)  VS 只包含运行时**
 
 
 
@@ -1085,9 +1085,24 @@ new Vue({
 
 
 
+## 12. VsCode 需要安装的 Vue 插件
 
 
-## 12. (拓展)代码格式化问题
+
+`.vue` 后缀名的代码，需要安装相关的 Vscode 插件才能够有高亮效果，`Vue2` 推荐安装下面两个：
+
+
+
+1. `Vetur`
+2. `Vue VSCode Snippets`
+
+
+
+
+
+
+
+## 13. (拓展)代码格式化问题
 
 > ESLint 与 Prettier 配合解决代码格式问题
 
@@ -1103,7 +1118,7 @@ new Vue({
 
      
 
-2. `Prettier` 的作用主要是进行代码格式化
+2. `Prettier` 的作用主要是进行**代码格式化**，统一代码的风格
 
    - `ESLint` 的作用是代码质量检测，`Prettier` 的作用则主要是代码格式化
    - `ESLint` 只能格式化 `js/ts` 文件，而 `Prettier` 支持多种文件
