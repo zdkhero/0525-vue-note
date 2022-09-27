@@ -339,6 +339,10 @@ console.log(b.pname)
 
 
 
+<img src="./images/组件的组织.png" style="zoom:80%; border: 1px solid #ccc" />
+
+
+
 **知识点：**
 
 1. 如果某个组件，需要在很多的地方使用，可以进行**全局注册**
@@ -464,6 +468,10 @@ console.log(b.pname)
 **知识点：**
 
 通常使用`App`组件，作为所有组件的根组件。
+
+<img src="./images/组件的组织.png" style="zoom:80%; border: 1px solid #ccc" />
+
+
 
 
 
@@ -943,9 +951,48 @@ vue create hello-world
 
 
 
+### 11.1 render 函数的作用
+
+
+
+`Vue` 推荐在绝大多数情况下使用模板来创建你的 `HTML`。然而在一些场景中，真的需要 `JavaScript` 的完全编程的能力。这时可以用渲染函数，它比模板更接近编译器。
+
+`render` 函数和 `template` 一样都是`创建 html 模板`的，但是有些场景中用 `template` 实现起来代码冗长繁琐而且有大量重复，这时候就可以用 `render` 函数
+
+
+
+```js
+new Vue({
+  render: (h) => h(App),
+  router
+}).$mount('#app')
+
+
+new Vue({
+  render: (createElement) => createElement(App),
+  router
+}).$mount('#app')
+
+new Vue({
+  render: (createElement) => createElement(h2, null, '段落'),
+  router
+}).$mount('#app')
+
+```
+
+
+
+
+
+
+
+
+
+### 11.2 Vue 不同的构建版本
+
+
+
 **1. 知识点：**
-
-
 
 在非单文件组件中，渲染模板都是使用 `template` 配置项，但是在脚手架的实例中配置 `template` 发现模板不仅不能解析，在浏览器控制还提示错误，错误显示目前项目中使用的 `Vue`是只包含运行时的版本的 `Vue`，如下图：
 
@@ -1031,3 +1078,128 @@ new Vue({
 
 
 `vue-loader + vue-template-compiler` + `运行时的 JS`，保证了我们 Vue 的正常工作
+
+
+
+
+
+
+
+
+
+## 12. (拓展)代码格式化问题
+
+> ESLint 与 Prettier 配合解决代码格式问题
+
+
+
+**是什么？**
+
+1. `ESLint` 是一个插件， **用来对 `javascript` 代码检测质量的工具** ，说白了就是做 **对代码质量检测使用的**
+
+   - 例如未使用的变量，未定义的引用，比较时使用 ===，禁止不必要的括号 等等代码质量检测
+
+   - `ESLint`大大提高了团队协作的代码规范统一性，以及个人的代码质量
+
+     
+
+2. `Prettier` 的作用主要是进行代码格式化
+
+   - `ESLint` 的作用是代码质量检测，`Prettier` 的作用则主要是代码格式化
+   - `ESLint` 只能格式化 `js/ts` 文件，而 `Prettier` 支持多种文件
+
+
+
+`Prettier` 自身的规范倾向于个人 / 团队的代码风格的规范或统一，例如单引号还是双引号，每行最大长度，等号左右空格，使用 tab 还是 空格等等，将`Prettier` 与 `ESLint` 一起协同工作犹如如虎添翼
+
+
+
+
+
+**怎么配置**
+
+
+
+1. VsCode 插件安装两个插件 `Eslint`、`Prettier - Code formatter`
+
+2. 在项目的根目录下创建 `.vscode` 文件夹，注意：文件夹名字前面带 **`.`** 点❗
+
+3. 在 `.vscode` 文件夹下，创建 `settings.json` 文件，用来对 `当前项目`进行格式化
+
+   ```json
+   {
+     // eslint 保存格式化
+     "eslint.enable": true,
+     // 执行 eslint 检测的时间，onType 输入时
+     "eslint.run": "onType",
+     //指定 eslint 所处理的文件的后缀
+     "eslint.options": {
+       "extensions": [".js", ".ts", ".jsx", ".tsx", ".vue"]
+     },
+     // 编辑器保存格式化
+     "editor.codeActionsOnSave": {
+       "source.fixAll": true,
+       "source.fixAll.eslint": true
+     },
+     // .ts 文件格式化程序
+     "[typescript]": {
+       "editor.defaultFormatter": "esbenp.prettier-vscode"
+     },
+   
+     // .vue 文件格式化程序
+     "[vue]": {
+       "editor.defaultFormatter": "esbenp.prettier-vscode"
+     },
+   
+     "[json]": {
+       "editor.defaultFormatter": "esbenp.prettier-vscode"
+     },
+   
+     // 操作时作为单词分隔符的字符
+     "editor.wordSeparators": "`~!@#%^&*()=+[{]}\\|;:'\",.<>/?",
+   
+     // 一个制表符等于的空格数
+     "editor.tabSize": 2,
+   
+     // 行尾字符
+     // "files.eol": "\n",
+   
+     // 保存到额时候用使用 prettier 进行格式化
+     "editor.formatOnSave": true,
+     
+     // // 不要有分号
+     // "prettier.semi": false,
+     // // 使用单引号
+     // "prettier.singleQuote": true,
+     // // 默认使用prittier作为格式化工具
+     // "editor.defaultFormatter": "esbenp.prettier-vscode",
+     // // 一行的字符数，如果超过会进行换行，默认为80
+     // "prettier.printWidth": 200,
+     // // 尾随逗号问题，设置为none 不显示 逗号
+     // "prettier.trailingComma": "none"
+   }
+   
+   ```
+
+   
+
+4. 在项目根目录下创建 `.prettierrc` 文件，用来配置
+
+   ```json
+   {
+     "semi": false,
+     "singleQuote": true,
+     "useTabs": false,
+     "tabWidth": 2,
+     "printWidth": 130,
+     "trailingComma": "none"
+   }
+   
+   ```
+
+   
+
+
+
+
+
