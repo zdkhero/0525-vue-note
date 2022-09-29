@@ -156,181 +156,7 @@
 
 
 
-
-
-## 3. 表单数据收集
-
-> 🎯 目标：掌握 Vue 进行表单收集的要点
-
-<img src="./images/表单收集案例.png" style="zoom:80%;" />
-
-
-
-### 3.1  静态表单
-
-
-
-**页面基础模板结构**
-
-```html
-<template>
-  <div class="container">
-    <p>账号：<input type="text" /></p>
-    <p>密码：<input type="password" /></p>
-    <p>性别：<input type="radio" name="gender" />男<input type="radio" name="gender" />女</p>
-    <p>
-      爱好：
-      <label for="cf"><input id="cf" type="checkbox" /> 吃饭 </label>
-      <label for="sj"><input id="sj" type="checkbox" /> 睡觉 </label>
-      <label for="hj"><input id="hj" type="checkbox" /> 喝酒 </label>
-      <label for="dd"><input id="ddd" type="checkbox" /> 打豆豆 </label>
-    </p>
-    <p>
-      城市：
-      <select>
-        <option value="">请选择城市</option>
-        <option value="bj">北京</option>
-        <option value="sh">上海</option>
-        <option value="sz">深圳</option>
-        <option value="gz">广州</option>
-      </select>
-    </p>
-    <p>
-      信息：
-      <textarea placeholder="请输入个人信息" name="" id="" cols="30" rows="10"></textarea>
-    </p>
-    <p><input type="checkbox" />我已阅读并同意<a href="https://www.baidu.com">用户协议</a></p>
-    <button>提交</button>
-  </div>
-</template>
-
-<script>
-export default {
-  name: 'RegisterPage'
-}
-</script>
-
-<style scoped>
-.container {
-  width: 320px;
-  margin: 20px auto;
-  border: 1px solid #ccc;
-  padding: 60px 80px;
-}
-textarea {
-  vertical-align: top;
-}
-select {
-  width: 160px;
-  height: 26px;
-}
-</style>
-
-```
-
-
-
-### 3.2 收集表单数据
-
-
-
-**知识点：**
-
-1. 若：`<input type="text"/>`，则`v-model`收集的是`value`值，用户输入的就是`value`值。
-2. 若：`<input type="radio"/>`，则`v-model`收集的是`value`值，且要给标签配置`value`值。
-3. 若：`<input type="checkbox"/>`
-   - 没配置`input`的`value`属性，那么收集的就是`checked`（勾选 或 未勾选，是布尔值）
-   - 配置了`input`的`value`属性：
-     - `v-model`的初始值是非数组s，那么收集的就是`checked`（勾选 或 未勾选，是布尔值）。
-     - `v-model`的初始值是数组，那么收集的的就是`value`组成的数组。
-
-
-
-**落地代码：**
-
-```html
-<template>
-  <div class="container">
-    <p>账号：<input type="text" v-model="userInfo.account" /></p>
-    <p>密码：<input type="password" v-model="userInfo.password" /></p>
-    <p>
-      性别：
-      <label for="man"><input id="man" type="radio" name="gender" v-model="userInfo.gender" value="man" />男</label>
-      <label for="woman"><input id="woman" type="radio" name="gender" v-model="userInfo.gender" value="woman" />女</label>
-    </p>
-    <p>
-      爱好：
-      <label for="cf"><input id="cf" type="checkbox" v-model="userInfo.likes" value="cf" /> 吃饭 </label>
-      <label for="sj"><input id="sj" type="checkbox" v-model="userInfo.likes" value="sj" /> 睡觉 </label>
-      <label for="hj"><input id="hj" type="checkbox" v-model="userInfo.likes" value="hj" /> 喝酒 </label>
-      <label for="dd"><input id="dd" type="checkbox" v-model="userInfo.likes" value="dd" /> 打豆豆 </label>
-    </p>
-    <p>
-      城市：
-      <select v-model="userInfo.city">
-        <option value="">请选择城市</option>
-        <option value="bj">北京</option>
-        <option value="sh">上海</option>
-        <option value="sz">深圳</option>
-        <option value="gz">广州</option>
-      </select>
-    </p>
-    <p>
-      信息：
-      <textarea v-model="userInfo.info" placeholder="请输入个人信息" name="" id="" cols="30" rows="10"></textarea>
-    </p>
-    <p><input type="checkbox" v-model="userInfo.isAgree" />我已阅读并同意<a href="https://www.baidu.com">用户协议</a></p>
-    <button @click="submit">提交</button>
-  </div>
-</template>
-
-<script>
-export default {
-  name: 'RegisterPage',
-  data() {
-    return {
-      userInfo: {
-        account: '', // 账号
-        password: '', // 密码
-        gender: '', // 性别
-        city: '', // 城市
-        likes: [], // 爱好
-        info: '', // 其他信息
-        isAgree: '' // 是否同意协议
-      }
-    }
-  },
-  methods: {
-    submit() {
-      console.log(this.userInfo)
-    }
-  }
-}
-</script>
-
-<style scoped>
-.container {
-  width: 320px;
-  margin: 20px auto;
-  border: 1px solid #ccc;
-  padding: 60px 80px;
-}
-textarea {
-  vertical-align: top;
-}
-select {
-  width: 160px;
-  height: 26px;
-}
-</style>
-
-```
-
-
-
-
-
-## 4. ref 属性的使用
+## 3. ref 属性的使用
 
 > 🎯 目标：掌握 Vue 中 ref 属性的使用
 
@@ -426,6 +252,184 @@ export default {
 
 
 
+
+
+
+
+## 4. 表单数据收集
+
+> 🎯 目标：掌握 Vue 进行表单收集的要点
+
+<img src="./images/表单收集案例.png" style="zoom:80%;" />
+
+
+
+### 4.1  静态表单
+
+
+
+**页面基础模板结构**
+
+```html
+<template>
+  <div class="container">
+    <p>账号：<input type="text" /></p>
+    <p>密码：<input type="password" /></p>
+    <p>性别：<input type="radio" name="gender" />男<input type="radio" name="gender" />女</p>
+    <p>
+      爱好：
+      <label for="cf"><input id="cf" type="checkbox" /> 吃饭 </label>
+      <label for="sj"><input id="sj" type="checkbox" /> 睡觉 </label>
+      <label for="hj"><input id="hj" type="checkbox" /> 喝酒 </label>
+      <label for="dd"><input id="ddd" type="checkbox" /> 打豆豆 </label>
+    </p>
+    <p>
+      城市：
+      <select>
+        <option value="">请选择城市</option>
+        <option value="bj">北京</option>
+        <option value="sh">上海</option>
+        <option value="sz">深圳</option>
+        <option value="gz">广州</option>
+      </select>
+    </p>
+    <p>
+      信息：
+      <textarea placeholder="请输入个人信息" name="" id="" cols="30" rows="10"></textarea>
+    </p>
+    <p><input type="checkbox" />我已阅读并同意<a href="https://www.baidu.com">用户协议</a></p>
+    <button>提交</button>
+  </div>
+</template>
+
+<script>
+export default {
+  name: 'RegisterPage'
+}
+</script>
+
+<style scoped>
+.container {
+  width: 320px;
+  margin: 20px auto;
+  border: 1px solid #ccc;
+  padding: 60px 80px;
+}
+textarea {
+  vertical-align: top;
+}
+select {
+  width: 160px;
+  height: 26px;
+}
+</style>
+
+```
+
+
+
+### 4.2 收集表单数据
+
+
+
+**知识点：**
+
+1. 若：`<input type="text"/>`，则`v-model`收集的是`value`值，用户输入的就是`value`值。
+2. 若：`<input type="radio"/>`，则`v-model`收集的是`value`值，且要给标签配置`value`值。
+3. 若：`<input type="checkbox"/>`
+   - 没配置`input`的`value`属性，那么收集的就是`checked`（勾选 或 未勾选，是布尔值）
+   - 配置了`input`的`value`属性：
+     - `v-model`的初始值是非数组，那么收集的就是`checked`（勾选 或 未勾选，是布尔值）。
+     - `v-model`的初始值是数组，那么收集的的就是`value`组成的数组。
+
+
+
+**落地代码：**
+
+```html
+<template>
+  <div class="container">
+    <p>账号：<input type="text" v-model="userInfo.account" /></p>
+    <p>密码：<input type="password" v-model="userInfo.password" /></p>
+    <p>
+      性别：
+      <label for="man"><input id="man" type="radio" name="gender" v-model="userInfo.gender" value="man" />男</label>
+      <label for="woman"><input id="woman" type="radio" name="gender" v-model="userInfo.gender" value="woman" />女</label>
+    </p>
+    <p>
+      爱好：
+      <label for="cf"><input id="cf" type="checkbox" v-model="userInfo.likes" value="cf" /> 吃饭 </label>
+      <label for="sj"><input id="sj" type="checkbox" v-model="userInfo.likes" value="sj" /> 睡觉 </label>
+      <label for="hj"><input id="hj" type="checkbox" v-model="userInfo.likes" value="hj" /> 喝酒 </label>
+      <label for="dd"><input id="dd" type="checkbox" v-model="userInfo.likes" value="dd" /> 打豆豆 </label>
+    </p>
+    <p>
+      城市：
+      <select v-model="userInfo.city">
+        <option value="">请选择城市</option>
+        <option value="bj">北京</option>
+        <option value="sh">上海</option>
+        <option value="sz">深圳</option>
+        <option value="gz">广州</option>
+      </select>
+    </p>
+    <p>
+      信息：
+      <textarea v-model="userInfo.info" placeholder="请输入个人信息" name="" id="" cols="30" rows="10"></textarea>
+    </p>
+    <p><input type="checkbox" v-model="userInfo.isAgree" />我已阅读并同意<a href="https://www.baidu.com">用户协议</a></p>
+    <button @click="submit">提交</button>
+  </div>
+</template>
+
+<script>
+export default {
+  name: 'RegisterPage',
+  data() {
+    return {
+      userInfo: {
+        account: '', // 账号
+        password: '', // 密码
+        gender: '', // 性别
+        city: '', // 城市
+        likes: [], // 爱好
+        info: '', // 其他信息
+        isAgree: '' // 是否同意协议
+      }
+    }
+  },
+  methods: {
+    submit() {
+      console.log(this.userInfo)
+    }
+  }
+}
+</script>
+
+<style scoped>
+.container {
+  width: 320px;
+  margin: 20px auto;
+  border: 1px solid #ccc;
+  padding: 60px 80px;
+}
+textarea {
+  vertical-align: top;
+}
+select {
+  width: 160px;
+  height: 26px;
+}
+</style>
+
+```
+
+
+
+
+
+
+
 ## 5. Vue 插件
 
 > 🎯 目标：掌握 Vue 插件的使用方法
@@ -492,17 +496,17 @@ Vue.use(plugin)
 
 
 
-## 6. props 父往子传值
+## 6.组件通讯-props(父往子传值)
 
 > 🎯 目标：掌握 Vue 中如何使用 props 父往子传值
+
+
 
 ### 6.1 props 的基本使用
 
 
 
 **知识点：**
-
-
 
 `props` 可以是数组或对象，用于接收来自父组件的数据。
 
@@ -534,7 +538,7 @@ export default {
 
 
 
-<img src="./images/props 传值 1.png" style="zoom:50%;" />
+<img src="./images/props 传值 1.png" style="zoom:60%;" />
 
 
 
@@ -619,94 +623,11 @@ export default {
 
 
 
-### 6.2 props 不可进行修改
-
-
-
-**知识点：**
-
-
-
-1. `props`是只读的，不可修改。
-2. 对于基本类型的`props`：一旦修改，直接就会报错。
- 3. 对象或数组类型的`props`：
-          1. 若修改的是整个对象或数组（地址值发生变化），会报错。
-       2. 若修改的是对象或数组中的内容（地址值不变），不会报错。
-
-
-
-所有的 `prop` 都使得其父子 prop 之间形成了一个**单向下行绑定**：父级 prop 的更新会向下流动到子组件中，但是反过来则不行。这样会防止从子组件意外变更父级组件的状态，从而导致你的应用的数据流向难以理解。
 
 
 
 
-
-**落地代码：**
-
-```vue
-<Student :grade="num" :money="money" :obj="{ say: '你要更加努力' }" />
-```
-
-
-
-```vue
-<template>
-  <!-- 组件的结构 -->
-  <div class="demo">
-    <h2>学生：{{ name }}</h2>
-    <p>{{ grade }} 年级，品学兼优，获得 {{ money }} 奖学金</p>
-    <p>{{ obj.say }}</p>
-
-    <button @click="handler">拿来偷偷买皮肤</button>
-  </div>
-</template>
-
-<script>
-export default {
-  name: 'SchoolPage',
-  data() {
-    return {
-      name: 'Tom'
-    }
-  },
-  props: ['grade', 'money', 'obj'],
-  methods: {
-    handler() {
-      // 对于基本类型的props：一旦修改，直接就会报错。
-      // eslint-disable-next-line
-      // console.log((this.money -= 10))
-
-      // 若修改的是对象或数组中的内容（地址值不变），不会报错。
-      // eslint-disable-next-line
-      // console.log((this.obj.say = '我会的'))
-
-      // 若修改的是整个对象或数组（地址值发生变化），但是会报错。
-      // eslint-disable-next-line
-      console.log((this.obj = { say: '今晚就玩王者' }))
-    }
-  }
-}
-</script>
-
-<style scoped>
-/* 组件的样式 */
-.demo {
-  background-color: lightblue;
-  padding: 40px;
-}
-</style>
-
-```
-
-
-
-
-
-
-
-
-
-### 6.3 props 的三种接收方式
+### 6.2 props 的三种接收方式
 
 
 
@@ -836,13 +757,897 @@ export default {
 
 
 
-## 7. 一个重要的内置关系
+### 6.3 props 不可进行修改
+
+
+
+**知识点：**
+
+
+
+1. `props`是只读的，不可修改。
+2. 对于基本类型的`props`：一旦修改，直接就会报错。
+ 3. 对象或数组类型的`props`：
+      - 若修改的是整个对象或数组（地址值发生变化），会报错。
+      - 若修改的是对象或数组中的内容（地址值不变），不会报错。
+
+
+
+所有的 `prop` 都使得其父子 prop 之间形成了一个**单向下行绑定**：父级 prop 的更新会向下流动到子组件中，但是反过来则不行。这样会防止从子组件意外变更父级组件的状态，从而导致你的应用的数据流向难以理解。
+
+
+
+
+
+**落地代码：**
+
+```vue
+<Student :grade="num" :money="money" :obj="{ say: '你要更加努力' }" />
+```
+
+
+
+```vue
+<template>
+  <!-- 组件的结构 -->
+  <div class="demo">
+    <h2>学生：{{ name }}</h2>
+    <p>{{ grade }} 年级，品学兼优，获得 {{ money }} 奖学金</p>
+    <p>{{ obj.say }}</p>
+
+    <button @click="handler">拿来偷偷买皮肤</button>
+  </div>
+</template>
+
+<script>
+export default {
+  name: 'SchoolPage',
+  data() {
+    return {
+      name: 'Tom'
+    }
+  },
+  props: ['grade', 'money', 'obj'],
+  methods: {
+    handler() {
+      // 对于基本类型的props：一旦修改，直接就会报错。
+      // eslint-disable-next-line
+      // console.log((this.money -= 10))
+
+      // 若修改的是对象或数组中的内容（地址值不变），不会报错。
+      // eslint-disable-next-line
+      // console.log((this.obj.say = '我会的'))
+
+      // 若修改的是整个对象或数组（地址值发生变化），但是会报错。
+      // eslint-disable-next-line
+      console.log((this.obj = { say: '今晚就玩王者' }))
+    }
+  }
+}
+</script>
+
+<style scoped>
+/* 组件的样式 */
+.demo {
+  background-color: lightblue;
+  padding: 40px;
+}
+</style>
+
+```
+
+
+
+
+
+
+
+
+
+## 7.组件通讯-自定义事件(子往父传值)
+
+
+
+### 7.1 使用 Props 实现子传父 
+
+<img src="E:/Vue 备课/01-Vue 基础/01-课程笔记/images/子往父传值.png" style="zoom:60%; border: 1px solid #ccc" />
+
+App.vue
+
+```vue
+<template>
+  <div class="parent">
+    <h2>父组件</h2>
+    <Children :getChildData="getChildData" />
+  </div>
+</template>
+
+<script>
+import Children from './components/Children.vue'
+
+export default {
+  components: {
+    Children
+  },
+  data() {
+    return {}
+  },
+  methods: {
+    getChildData(newVal) {
+      console.log(newVal)
+    }
+  }
+}
+</script>
+
+<style scoped>
+.parent {
+  background-color: skyblue;
+  height: 300px;
+  padding: 30px;
+}
+</style>
+
+```
+
+
+
+children.vue
+
+```vue
+<template>
+  <div class="children">
+    <h3>子组件</h3>
+    <button @click="handler">传递数据给父组件</button>
+  </div>
+</template>
+
+<script>
+export default {
+  name: 'ChildrenPage',
+  props: ['getChildData'],
+  methods: {
+    handler() {
+      this.getChildData(10)
+    }
+  }
+}
+</script>
+
+<style scoped>
+.children {
+  background-color: pink;
+  height: 200px;
+  padding: 20px;
+}
+</style>
+
+```
+
+
+
+
+
+
+
+### 7.2 自定义事件基本使用
+
+
+
+<img src="E:/Vue 备课/01-Vue 基础/01-课程笔记/images/子往父传值.png" style="zoom:60%; border: 1px solid #ccc" />
+
+
+
+1. 通过 `@` 或者 `v-on` 向 `VueComponents` 实例身上添加一个**自定义的事件**
+2. 在  `VueComponents` 内部，使用 `$emit` 触发自定义事件的调用
+3. **注意：自定义事件的用法只能用在组件标签身上**
+
+
+
+App.vue
+
+```vue
+<template>
+  <div class="parent">
+    <h2>父组件</h2>
+    <!-- 向 VueComponents 身上添加一个自定义的方法 -->
+    <Children @getData="getChildrenData" />
+  </div>
+</template>
+
+<script>
+import Children from './components/ChildrenPage.vue'
+
+export default {
+  components: {
+    Children
+  },
+  data() {
+    return {}
+  },
+  methods: {
+    getChildrenData(data) {
+      console.log(data)
+    }
+  }
+}
+</script>
+
+<style scoped>
+.parent {
+  background-color: skyblue;
+  height: 300px;
+  padding: 30px;
+}
+</style>
+
+```
+
+
+
+children.vue
+
+```vue
+<template>
+  <div class="children">
+    <h3>子组件</h3>
+    <button @click="handler">传递数据给父组件</button>
+  </div>
+</template>
+
+<script>
+export default {
+  name: 'ChildrenPage',
+  methods: {
+    handler() {
+      this.$emit('getData', 123)
+    }
+  }
+}
+</script>
+
+<style scoped>
+.children {
+  background-color: pink;
+  height: 200px;
+  padding: 20px;
+}
+</style>
+
+```
+
+
+
+
+
+
+
+### 7.3 第二种绑定自定义事件的方式
+
+
+
+<img src="E:/Vue 备课/01-Vue 基础/01-课程笔记/images/子往父传值.png" style="zoom:60%; border: 1px solid #ccc" />
+
+
+
+1. 给组件标签绑定 `ref` 属性，主要利用 `ref` 属性可以获取组件实例的特性
+
+2. **需要注意 this 的指向问题，这点非常关键**
+
+    
+
+   - `this`：获取的是当前组件的实例对象
+   - `this.$refs.child`：获取的是 ref 值为 child 的那个组件的实例对象
+   - `this.$refs.child.$on('事件名', 回调函数)`，回调函数中的自定义事件 `this` 指向 `ref `值为 `child` 的那个组件的实例对象，
+     - <font color="red">**自定义事件的回调，要么直接写成箭头函数，要么提前在`methods`中配置好。**</font>
+     - 为什么这么做？想让`this`是要接收数据组件的实例对象。
+
+
+
+App.vue
+
+```vue
+<template>
+  <div class="parent">
+    <h2>父组件</h2>
+    <input type="text" v-model="val" />
+    <Children ref="child" />
+  </div>
+</template>
+
+<script>
+import Children from './components/Children.vue'
+
+export default {
+  name: 'App',
+  components: {
+    Children
+  },
+  data() {
+    return {
+      name: 'App',
+      val: ''
+    }
+  },
+  mounted() {
+    // 获取的是当前组件的实例对象
+    console.log(this)
+
+    // 获取的是 ref 值为 child 的那个组件的实例对象
+    console.log(this.$refs.child)
+
+    // 此处的的数据如果想对 data 里面的数据进行赋值，必须使用箭头函数
+    this.$refs.child.$on('getData', (value) => {
+      console.log(value)
+      this.val = value
+    })
+  }
+}
+</script>
+
+<style scoped>
+.parent {
+  background-color: skyblue;
+  height: 360px;
+  padding: 30px;
+}
+</style>
+
+```
+
+
+
+Children.vue
+
+```vue
+<template>
+  <div class="children">
+    <h3>子组件</h3>
+    <button @click="handler">传递数据给父组件</button>
+  </div>
+</template>
+
+<script>
+export default {
+  name: 'Children-page',
+  data() {
+    return {
+      name: 'child'
+    }
+  },
+  methods: {
+    handler() {
+      this.$emit('getData', 456789)
+    }
+  }
+}
+</script>
+
+<style scoped>
+.children {
+  background-color: pink;
+  height: 200px;
+  padding: 20px;
+}
+</style>
+
+```
+
+
+
+
+
+
+
+
+
+
+
+### 7.4 解绑事件
+
+<img src="E:/Vue 备课/01-Vue 基础/01-课程笔记/images/解绑 传值 1.png" style="zoom:60%;border: 1px solid #ccc" />
+
+
+
+使用 `$off` 方法进行事件的解绑
+
+- 如果想解绑多个事件 `this.$off('事件名')`
+- 如果想解绑多个事件 `this.$off(['事件名',  '事件名'])`
+- 如果需要解绑自身全部事件 `this.$off()`
+
+
+
+Children.vue
+
+```vue
+<template>
+  <div class="children">
+    <h3>子组件</h3>
+    <button @click="handler">传递数据给父组件</button>
+
+    <button @click="removeHandler">解绑事件</button>
+  </div>
+</template>
+
+<script>
+export default {
+  name: 'Children-page',
+  data() {
+    return {
+      name: 'child'
+    }
+  },
+  methods: {
+    handler() {
+      this.$emit('getData', 456789)
+    },
+
+    removeHandler() {
+      this.$off('getData')
+    }
+  }
+}
+</script>
+
+<style scoped>
+.children {
+  background-color: pink;
+  height: 200px;
+  padding: 20px;
+  margin-top: 10px;
+}
+</style>
+
+```
+
+
+
+
+
+### 7.5 自定义事件的注意事项
+
+
+
+1. 组件上也可以绑定原生 DOM 事件，会把原生事件加在组件最外侧元素上，需要使用 `.native` 修饰符
+2. 多个单词组成的事件名，官方推荐使用 kebab-case 命名，例如：`v-on:hello-world`
+
+
+
+不同于组件和 prop，事件名不会被用作一个 `JavaScript` 变量名或 `property` 名，所以就没有理由使用 `camelCase` 或 `PascalCase` 了。并且 `v-on` 事件监听器在 DOM 模板中会被自动转换为全小写 (因为 HTML 是大小写不敏感的)，所以 `v-on:myEvent` 将会变成 `v-on:myevent`——导致 `myEvent` 不可能被监听到。
+
+因此，我们推荐你**始终使用 kebab-case 的事件名**。
+
+
+
+
+
+## 8. 一个重要的内置关系
 
 
 
 `VueComponent.prototype.__proto__ === Vue.prototype`，组件实例对象（vc）可以访问到 Vue原型上的属性、方法。
 
 ![](./images/Vue 组件内置关系.png)
+
+
+
+
+
+
+
+## 9. 组件通讯-全局事件总线
+
+
+
+
+
+### 9.1 全局实现总线原理分析
+
+
+
+
+
+<img src="E:/Vue 备课/01-Vue 基础/01-课程笔记/images/事件总线原理.png" style="zoom:60%; border: 1px solid #ccc" />
+
+
+
+1. 事件总线( `EventBus`) 是一种组件间通讯的方式，常用于两个非父子关系组件和兄弟组件之间通讯，简而言之，**可以用于任意组件间通信**
+
+    
+
+2. 事件总线在 Vue 中被用来作为组件间通信的桥梁， 事件总线像是所有组件共用相同的事件中心，我们可以使用 `$emit`，`$on`，`$off`向该中心注册分发、监听、取消监听事件
+
+    
+
+3. 想实现事件中心，有两个必备的条件：
+
+   - 事件中心能够被所有的组件访问到
+   - 既然事件中心能绑定事件，需要确保事件中心能够调用`$emit`，`$on`，`$off`
+
+
+
+
+
+### 9.2 全局实现总线案例准备
+
+<img src="E:/Vue 备课/01-Vue 基础/01-课程笔记/images/bear.png" style="zoom:60%;" />
+
+
+
+App.vue
+
+```vue
+<template>
+  <div class="parent">
+    <h2>父组件</h2>
+
+    <BearBig />
+    <hr />
+    <BearTwo />
+  </div>
+</template>
+
+<script>
+import BearBig from './components/BearBig.vue'
+import BearTwo from './components/BearTwo.vue'
+
+export default {
+  name: 'App',
+  components: {
+    BearBig,
+    BearTwo
+  },
+  data() {
+    return {
+      name: 'App',
+      val: ''
+    }
+  }
+}
+</script>
+
+<style scoped>
+.parent {
+  background-color: skyblue;
+  height: 360px;
+  padding: 30px;
+}
+</style>
+
+```
+
+
+
+BearBig.vue
+
+```vue
+<template>
+  <div class="container">
+    <h4>熊大组件</h4>
+  </div>
+</template>
+
+<script>
+export default {}
+</script>
+
+<style scoped>
+.container {
+  background-color: lightgreen;
+  height: 100px;
+  padding: 10px;
+}
+</style>
+
+```
+
+
+
+BearTwo.vue
+
+```vue
+<template>
+  <div class="container">
+    <h4>熊二组件</h4>
+  </div>
+</template>
+
+<script>
+export default {}
+</script>
+
+<style scoped>
+.container {
+  background-color: pink;
+  height: 100px;
+  padding: 10px;
+}
+</style>
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+### 9.3 实现事件总线 1 - 被所有组件访问
+
+
+
+借助如下图：
+
+
+
+<img src="E:/Vue 备课/01-Vue 基础/01-课程笔记/images/Vue 组件内置关系.png" style="zoom:20%;" />
+
+
+
+思考：事件中心能够被所有的组件访问到，那么应该事件中心放到哪一个位置？
+
+
+
+答：猜测：① VueComponent 的原型对象  猜测 ② Vue 的原型对象
+
+
+
+**验证：VueComponent 的原型对象**
+
+```js
+// main.js
+
+// 直接写 VueComponent 不行
+// VueComponent.prototype.eventBus = '100'
+
+// 我们就在 VueComponent 的原型身上添加了一个 eventBus
+const VueComponent = Vue.extend()
+VueComponent.prototype.eventBus = '100'
+
+
+// 在每个组件中，访问 this.eventBus
+// 返回的都是 undefined，发现不是我们预期的结果
+
+// 原因是什么 ？
+// Vue.extend() 每次返回的都是一个新的 VueComponent
+// 那么最新的 VueComponent，就会有一个的新的 VueComponent 原型对象
+// 找不到，最终返回的就是一个 undefined
+```
+
+
+
+结论：事件中心 放到 VueComponent 的原型对象身上是不行的！除非更改源码 ！😀😀
+
+
+
+
+
+**验证：Vue 的原型对象**
+
+```js
+// main.js
+
+// 直接在 Vue 的原型身上
+Vue.prototype.eventBus = '100'
+
+// 在每个组件中，访问 this.eventBus
+// 返回的都是 100，是我们预期的结果
+
+```
+
+
+
+结论：事件中心 放到 Vue 的原型对象 ！
+
+
+
+
+
+
+
+### 9.4 实现事件总线 2 -能够访问事件
+
+
+
+既然事件中心能绑定事件，需要确保事件中心能够调用`$emit`，`$on`，`$off`，
+
+因此，`EventBus` 只能有两个选择，要么是 `vm` ，要么设计 `vc`
+
+
+
+**验证：EventBus = vc**
+
+
+
+```js
+// main.js
+
+// Vue.prototype.eventBus = vc ???
+
+const VueComponent = Vue.extend()
+const vc = new VueComponent()
+Vue.prototype.eventBus = vc
+
+// 这种写法能够访问到 $on、$emit 吗？
+
+// 能，但是我们不能这么写
+// 1. Vue.extend() 本质是创建对象
+// 2. VueComponent 不需要自己 new
+```
+
+
+
+
+
+结论：`EventBus` 不能是 `vc`
+
+
+
+
+
+**验证：EventBus = vm**
+
+```js
+// main.js
+
+Vue.prototype.eventBus = new Vue()
+
+// 这种写法能够访问到 $on、$emit 吗？
+
+// 能
+
+// 注意，这时候，在我们项目中出现了两个实例：
+new Vue({
+  render: h => h(App)
+}).$mount('#app')
+
+//-------------------------
+//-------------------------
+
+new Vue({
+  beforeCreate() {
+    Vue.prototype.eventBus = this
+  },
+  render: h => h(App)
+}).$mount('#app')
+```
+
+
+
+结论：`EventBus` 是 `vm`
+
+
+
+
+
+落地代码：
+
+App.vue
+
+```js
+//引入Vue
+import Vue from 'vue'
+import App from './App'
+
+Vue.config.productionTip = false
+
+new Vue({
+  beforeCreate() {
+    Vue.prototype.$eventBus = this
+  },
+  render: (h) => h(App)
+}).$mount('#app')
+
+```
+
+
+
+BearBig.vue
+
+```vue
+<template>
+  <div class="container">
+    <h4>熊大组件</h4>
+    <button @click="giveApple">熊二，给你苹果吃</button>
+  </div>
+</template>
+
+<script>
+export default {
+  methods: {
+    giveApple() {
+      this.$eventBus.$emit('apple', 10)
+    }
+  }
+}
+</script>
+```
+
+
+
+BearSmall.vue
+
+```vue
+<template>
+  <div class="container">
+    <h4>熊二组件</h4>
+  </div>
+</template>
+
+<script>
+export default {
+  mounted() {
+    this.$eventBus.$on('apple', (val) => {
+      console.log(val)
+    })
+  },
+  beforeDestroy() {
+    this.$eventBus.$off('apple')
+  }
+}
+</script>
+```
+
+
+
+
+
+### 9.5 全局实现总结
+
+
+
+1. 安装全局事件总线
+
+   ```js
+   new Vue({
+     beforeCreate() {
+       // 安装全局事件总线，$eventBus 就是当前应用的 vm
+       Vue.prototype.$eventBus = this
+     },
+       
+     render: (h) => h(App)
+   }).$mount('#app')
+   
+   ```
+
+   
+
+2. 使用事件总线
+
+   接收数据：A 组件想要接收数据，则在 A 组件中给 $eventBus绑定自定义事件，事件回调留在 A 组件本身
+
+   ```vue
+   <script>
+   export default {
+     mounted() {
+       this.$eventBus.$on('apple', (val) => {
+         console.log(val)
+       })
+     },
+     beforeDestroy() {
+       this.$eventBus.$off('apple')
+     }
+   }
+   </script>
+   ```
+
+   
+
+   提供数据：`this.$bus.$emit('xxx', 数据)`
+
+   
+
+3. 最好在 beforeDestory 钩子中，用 $off 去解绑`当前组件所用到`的事件
+
+
+
+
 
 
 
