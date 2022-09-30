@@ -4,7 +4,7 @@
 
 
 
-## 1. 组件通讯-$children与 $parent
+## 1. 组件通讯-$parent与$children
 
 
 
@@ -171,7 +171,7 @@
 
 
 
-`$attrs / $listeners`，实现组件之间的跨代通信
+`$attrs / $listeners`，实现组件之间的跨组件通信
 
 
 
@@ -639,10 +639,10 @@ export default {
 
    ```js
    todos:[
-     {id:'qw7ywqe28',title:'吃饭',done:false},
-     {id:'dw3iw92kj',title:'睡觉',done:true},
-     {id:'opkmi9s72',title:'学习',done:false},
-     {id:'uytrewert',title:'打豆豆',done:true},
+     {id:'1',title:'吃饭',done:false},
+     {id:'2',title:'睡觉',done:true},
+     {id:'3',title:'学习',done:false},
+     {id:'4',title:'打豆豆',done:true},
    ]
    ```
 
@@ -722,7 +722,7 @@ export default {
 
 > 很多组件都用的数据，可以放在他们共同的父组件中，这种操作叫：状态提升（数据提升）。
 
-
+> 使用子往父传值的方式进行实现
 
 1. 观察发现：`todos`数组，好多组件都要使用，所以我们选择放在`App`组件中。
 
@@ -740,10 +740,10 @@ export default {
      data() {
        return {
          todos: [
-           { id: 'qw7ywqe28', title: '吃饭', done: false },
-           { id: 'dw3iw92kj', title: '睡觉', done: true },
-           { id: 'opkmi9s72', title: '学习', done: false },
-           { id: 'uytrewert', title: '打豆豆', done: true }
+           { id: '1', title: '吃饭', done: false },
+           { id: '2', title: '睡觉', done: true },
+           { id: '3', title: '学习', done: false },
+           { id: '4', title: '打豆豆', done: true }
          ]
        }
      }
@@ -770,82 +770,72 @@ export default {
    > 注意判断重复数据，使用数组的`find`方法。
 
    ```vue
-   <script>
-   export default {
-     name: 'App',
-     components: {
-       Header,
-       List,
-       Footer
-     },
-     data() {
-       return {
-         todos: [
-           { id: '1', title: '吃饭', done: false },
-           { id: '2', title: '睡觉', done: true },
-           { id: '3', title: '学习', done: false },
-           { id: '4', title: '打豆豆', done: true }
-         ]
-       }
-     },
-     methods: {
-       addTodo(newTodo) {
-         const result = this.todos.find((item) => {
-           return item.id === newTodo.id
-         })
+   <template>
+     <div class="todo-header">
+       <input type="text" placeholder="请输入你的任务名称，按回车键确认" @keyup.enter="sendData" />
+     </div>
+   </template>
    
-         if (result) {
-           alert('输入重复，请重新输入')
-         } else {
-           this.todos.unshift(newTodo)
-         }
-       }
-     }
-   }
-   </script>
-   ```
-
-   
-
-5. `Header`组件中，接收`addTodo`，需要添加的时候，直接调用即可
-
-   ```vue
    <script>
    export default {
      name: 'TodoHeader',
-     props: ['addTodo', 'todos'],
+     props: {
+       todos: Array
+     },
      methods: {
-       handleAdd(event) {
-         let { value } = event.target
+       // 将数据传递给父组件
+       sendData(e) {
+         // { id: '1', title: '吃饭', done: false },
    
-         // 获取所有任务的 ID
-         let ids = this.todos.map((item) => {
-           return item.id
-         })
+         // 计算 id
+         const ids = this.todos.map((item) => item.id)
    
-         // 计算所有任务 ID 的最大值
-         let maxId = Math.max.apply(null, ids) + 1
+         // 计算出最大值
+         let MaxId
+         // 如果 ids 长度为 0，说明 todo 没有数据，新增后第一个数据 id 应该为 1
+         MaxId = ids.length === 0 ? 1 : Math.max.apply(null, ids) + 1
    
-         if (value.trim()) {
-           let todoObj = {
-             id: maxId,
-             title: value.trim(),
+         if (e.target.value.trim()) {
+           const newTodo = {
+             id: MaxId,
+             title: e.target.value,
              done: false
            }
    
-           //调用App传递过来的addTodo，去实现添加
-           this.addTodo(todoObj)
-         } else {
-           alert('输入不能为空！')
-         }
+           this.$emit('getTodo', newTodo)
    
-         //清空用户输入
-         event.target.value = ''
+           e.target.value = ''
+         } else {
+           alert('请输入任务名称')
+         }
        }
      }
    }
    </script>
    ```
+
+   
+
+5. `App.vue`组件中，接收`新则任务`，进行添加
+
+   ```vue
+   <Header :todos="todos" @getTodo="getTodo" />
+   ```
+
+   ```js
+   // 获取头部传递的数据
+   getTodo(newTodo) {
+     const todo = this.todos.find((item) => item.title === newTodo.title)
+   
+     if (!todo) {
+       this.todos.unshift(newTodo)
+     } else {
+       alert('任务已经存在')
+     }
+   }
+   ```
+
+   
 
 
 
@@ -857,7 +847,25 @@ export default {
 
 
 
-1. 由于数据在`App`组件中，所以在`App`中创建一个`deleteTodo`方法，用于删除某个`todo`。
+> 删除任务： 使用全局事件总线的方式进行
+
+
+
+1. 创建全局事件总线
+
+   ```js
+   new Vue({
+     beforeCreate() {
+       Vue.prototype.$EventBus = this
+     },
+     render: (h) => h(App)
+   }).$mount('#app')
+   
+   ```
+
+   
+
+2. 由于数据在`App`组件中，所以在`App`中创建一个`deleteTodo`方法，用于删除某个`todo`。
 
    ```js
    methods: {
@@ -871,63 +879,29 @@ export default {
 
    
 
-2. `App`组件中，通过`props`将`deleteTodo`传给List组件。
+3. `App`组件中，通过 `$on` 绑定事件
 
-   ```vue
-   <List :todos="todos" :deleteTodo="deleteTodo"/>
+   ```js
+   mounted() {
+     this.$EventBus.$on('getId', this.delTodo)
+   }
    ```
 
    
 
-3. List组件接收到deleteTodo后，进一步传给Item组件
+4. `Item`组件中，通过 `$emit` 触发事件
 
-   ```vue
-   <template>
-     <ul class="todo-main">
-       <Item v-for="t in todos" :key="t.id" :todo="t" :deleteTodo="deleteTodo"/>
-     </ul>
-   </template>
-   
-   <script>
-   	import Item from './Item.vue'
-     
-   	export default {
-   		name: "List",
-   		components:{Item},
-   		props:['todos','deleteTodo']
-   	};
-   </script>
+   ```js
+   methods: {
+     delTodo(id) {
+       if (confirm('您是否删除该任务 ？')) {
+         this.$EventBus.$emit('getId', id)
+       }
+     }
+   }
    ```
 
-   
-
-4. `Item`组件中，接收`deleteTodo`，并在需要删除的时候使用
-
-   ```vue
-   <template>
-     <li>
-       <label> 
-   			<input type="checkbox" v-model="todo.done"/>
-   			<span>{{todo.title}}</span> 
-   		</label>
-       <button class="btn btn-danger" @click="handleDelete(todo.id)">删除</button>
-     </li>
-   </template>
-   
-   <script>
-   	export default {
-   		name: "Item",
-   		props:['todo','deleteTodo'],
-   		methods: {
-   			handleDelete(id){
-   				if(confirm('确定删除吗？')){
-   					this.deleteTodo(id)
-   				}
-   			}
-   		},
-   	};
-   </script>
-   ```
+    
 
 
 
