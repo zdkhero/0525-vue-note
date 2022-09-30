@@ -660,7 +660,8 @@ export default {
      a:{
        type:String, // 检测传递的数据类型
        required:true, // 设置属性是必填项
-       default:'Tom' // 默认值
+       default:'Tom', // 默认值
+       validator: function (val) {} // 自定义对应的逻辑
      }
    }
    ```
@@ -1022,7 +1023,7 @@ export default {
 
 
 
-### 7.3 第二种绑定自定义事件的方式
+### 7.3 第三种绑定自定义事件的方式
 
 
 
@@ -1151,7 +1152,7 @@ export default {
 
 使用 `$off` 方法进行事件的解绑
 
-- 如果想解绑多个事件 `this.$off('事件名')`
+- 如果想解绑单个事件 `this.$off('事件名')`
 - 如果想解绑多个事件 `this.$off(['事件名',  '事件名'])`
 - 如果需要解绑自身全部事件 `this.$off()`
 
