@@ -6,7 +6,13 @@
 
 
 
-Vuex 是一个专为 Vue.js 应用程序开发的 **状态管理模式 + 库**。它采用集中式存储管理应用的所有组件的状态，并以相应的规则保证状态以一种可预测的方式发生变化。
+Vuex 是一个专为 Vue.js 应用程序开发的 **状态管理模式 + 库**。它采用集中式存储管理应用的所有组件的状态，并以相应的`规则`保证状态以一种可预测的方式发生变化。
+
+
+
+Vuex 是一个专为 Vue.js 应用程序开发的**状态(数据)管理库 + 模式(流程、套路)**
+
+Vuex 提供了一套流程、套路对状态进行管理(修改、获取)
 
 
 
@@ -41,7 +47,7 @@ Vuex 是一个专为 Vue.js 应用程序开发的 **状态管理模式 + 库**�
 
 总结出：
 
-​	    需要共享的数据需要存储到 State 中，如果需要对共享的数据进行变更，需要使用 Mutation 方法机进行更新，更新后的数据会更新到视图中。
+​	    需要共享的数据需要存储到 State 中，如果需要对共享的数据进行变更，需要使用 Mutation 方法进行更新，更新后的数据会更新到视图中。
 
 ​       如果视图中进行了异步的操作，需要交给 action 来进行处理，但 action 不能直接更新数据，如果需要对数据进行变更，需要触发 mutations，而不是直接变更状态。
 
@@ -647,7 +653,7 @@ let actions = {
 
    
 
-2. 若修改数据的过程中，存在网络请求，可以选择把网络请求交给`action`，当然也可以不交给`action`
+2. 若修改数据的过程中，存在网络请求，可以选择把网络请求交给`action`，当然也可以不交给`mutations`
 
    ```js
    this.$store.dispatch('actions 中的方法名', 数据))
@@ -674,9 +680,11 @@ let actions = {
 
 > 🎯 目标：熟练 Getters 的使用
 
+
+
 **知识点：**
 
-
+类似于 Vuex 中计算属性，也是基于已有的数据(属性)产生新的数据(属性)
 
 有时候我们需要从 `store` 中的 `state` 中派生出一些状态，可以认为是 store 的计算属性。就像计算属性一样，`getter` 的返回值会根据它的依赖被缓存起来，且只有当它的依赖值发生了改变才会被重新计算
 
@@ -1164,6 +1172,664 @@ export default {
 ```
 
 
+
+
+
+
+
+## 14. TodoList - Vuex 版本
+
+
+
+### 14.1 准备静态页面结构
+
+
+
+从之前的代码中直接复制即可
+
+
+
+
+
+
+
+### 14.2 构建 Vuex 环境
+
+
+
+`store/index.js`
+
+```js
+import Vue from 'vue'
+import Vuex from 'vuex'
+Vue.use(Vuex)
+
+let state = {}
+
+let mutations = {}
+
+let actions = {}
+
+let getters = {}
+
+const store = new Vuex.Store({
+  state,
+  actions,
+  mutations,
+  getters,
+  modules: {}
+})
+
+export default store
+
+```
+
+
+
+`main.js`
+
+```js
+import Vue from 'vue'
+import App from './App.vue'
+
+import store from './store'
+
+Vue.config.productionTip = false
+
+new Vue({
+  render: (h) => h(App),
+  store
+}).$mount('#app')
+
+```
+
+
+
+
+
+
+
+### 14.3 初始化页面数据
+
+
+
+`store/index.js` 初始化数据
+
+```js
+let state = {
+  todos: [
+    { id: 1, title: '吃饭', done: false },
+    { id: 2, title: '睡觉', done: true },
+    { id: 3, title: '学习', done: false },
+    { id: 4, title: '打豆豆', done: true }
+  ]
+}
+
+```
+
+
+
+`List.vue` 使用数据
+
+```vue
+<template>
+  <ul class="todo-main">
+    <Item v-for="item in todos" :key="item.id" :todo="item" />
+  </ul>
+</template>
+
+<script>
+import { mapState } from 'vuex'
+import Item from './item.vue'
+
+export default {
+  name: 'TodoList',
+  components: {
+    Item
+  },
+  computed: {
+    ...mapState(['todos'])
+  }
+}
+</script>
+
+```
+
+
+
+`Item.vue` 使用数据
+
+```vue
+<template>
+  <div>
+    <li>
+      <label>
+        <input type="checkbox" />
+        <span>{{ todo.title }}</span>
+      </label>
+      <button class="btn btn-danger" style="display: none">删除</button>
+    </li>
+  </div>
+</template>
+
+<script>
+export default {
+  name: 'TodoItem',
+  props: {
+    todo: {
+      type: Object
+    }
+  }
+}
+</script>
+```
+
+
+
+
+
+
+
+### 14.4 新增功能
+
+
+
+`header.vue`
+
+```vue
+<template>
+  <div class="todo-header">
+    <input type="text" placeholder="请输入你的任务名称，按回车键确认" @keyup.enter="addTodo" />
+  </div>
+</template>
+
+<script>
+
+export default {
+  name: 'TodoHeader',
+  methods: {
+    addTodo (e) {
+      
+      // 计算 id
+      const ids = this.$store.state.todos.map((item) => item.id)
+
+      // 计算出最大值
+      let MaxId
+      // 如果 ids 长度为 0，说明 todo 没有数据，新增后第一个数据 id 应该为 1
+      MaxId = ids.length === 0 ? 1 : Math.max.apply(null, ids) + 1
+
+      if (e.target.value.trim()) {
+        const newTodo = {
+          id: MaxId,
+          title: e.target.value,
+          done: false
+        }
+
+        this.$store.commit('addTodoFunc', newTodo)
+
+        e.target.value = ''
+      } else {
+        alert('请输入任务名称')
+      }
+    }
+  }
+}
+</script>
+```
+
+
+
+`store/index.js`
+
+```js
+let mutations = {
+  // 新增任务
+  addTodoFunc(state, newTodo) {
+    const todo = state.todos.find((item) => item.title === newTodo.title)
+
+    if (!todo) {
+      state.todos.unshift(newTodo)
+    } else {
+      alert("任务已经存在")
+    }
+  }
+}
+```
+
+
+
+
+
+### 14.5 更新状态
+
+
+
+`Item.vue`
+
+```vue
+<input type="checkbox" @change="updateDone(todo.id, $event)" />
+
+
+<script>
+export default {
+  methods: {
+    updateDone (id, e) {
+      this.$store.commit('updateDoneFunc', { id, done: e.target.checked })
+    }
+  }
+}
+</script>
+```
+
+
+
+`store/index.js`
+
+```js
+let mutations = {
+    
+  updateDoneFunc (state, newObj) {
+    const todo = state.todos.find(item => item.id === newObj.id)
+
+    if (todo) {
+      todo.done = newObj.done
+    }
+  }
+}
+```
+
+
+
+
+
+
+
+### 14.5 删除操作
+
+
+
+`Item.vue`
+
+```vue
+<button class="btn btn-danger" @click="deleTodo(todo.id)">删除</button>
+
+<script>
+export default {
+  methods: {
+    // .....
+
+    deleTodo (id) {
+      this.$store.commit('delTodoFunc', id)
+    }
+  }
+}
+</script>
+```
+
+
+
+`store/index.js`
+
+```js
+let mutations = {
+  delTodoFunc (state, id) {
+    state.todos = state.todos.filter(item => item.id !== id)
+  }
+}
+```
+
+
+
+
+
+
+
+### 14.6 已完成和全部数据
+
+
+
+`store/index.js`
+
+```js
+let getters = {
+   // 总数全部
+   total(state) {
+    return state.todos.length
+  },
+
+  // 已完成的个数
+  doneTotal(state) {
+    return state.todos.filter((item) => item.done === true).length
+  }
+}
+
+```
+
+
+
+`Footer.vue`
+
+```vue
+<template>
+  <div class="todo-footer">
+    <label>
+      <input type="checkbox" />
+    </label>
+    <span> <span>已完成 {{ doneTotal }}</span> / 全部 {{ total }} </span>
+    <button class="btn btn-danger">清除已完成任务</button>
+  </div>
+</template>
+
+<script>
+import { mapGetters } from 'vuex'
+export default {
+  name: 'TodoFooter',
+  computed: {
+    ...mapGetters(['total', 'doneTotal'])
+  }
+}
+</script>
+
+```
+
+
+
+
+
+### 14.7 全选和全不选
+
+
+
+`Footer.vue`
+
+```vue
+<template>
+  <div class="todo-footer">
+    <label>
+      <input type="checkbox" :checked="isAllChecked" @change="selectAll" />
+    </label>
+    <span> <span>已完成 {{ doneTotal }}</span> / 全部 {{ total }} </span>
+    <button class="btn btn-danger">清除已完成任务</button>
+  </div>
+</template>
+
+<script>
+import { mapGetters } from 'vuex'
+export default {
+  name: 'TodoFooter',
+  methods: {
+    selectAll (e) {
+      this.$store.commit('selectAllFunc', e.target.checked)
+    }
+  },
+  computed: {
+    ...mapGetters(['total', 'doneTotal']),
+    isAllChecked() {
+      return this.total === this.doneTotal
+    }
+  }
+}
+</script>
+```
+
+
+
+`store/index.js`
+
+```js
+
+let mutations = {
+  selectAllFunc (state, done) {
+    console.log(done)
+    state.todos.forEach(item => item.done = done)
+  }
+}
+
+```
+
+
+
+
+
+
+
+### 14.8 缓存数据
+
+
+
+`store/index.js`
+
+```js
+let state = {
+  todos: JSON.parse(localStorage.getItem('todos')) || []
+}
+
+let mutations = {
+  addTodoFunc(state, newTodo) {
+    const todo = state.todos.find((item) => item.title === newTodo.title)
+
+    if (!todo) {
+      state.todos.unshift(newTodo)
+    } else {
+      alert("任务已经存在")
+    }
+  },
+
+  updateDoneFunc (state, newObj) {
+    const todo = state.todos.find(item => item.id === newObj.id)
+
+    if (todo) {
+      todo.done = newObj.done
+        
+      this.commit('saveTodo')
+    }
+  },
+
+  delTodoFunc (state, id) {
+    state.todos = state.todos.filter(item => item.id !== id)
+      
+    this.commit('saveTodo')
+  },
+
+  selectAllFunc (state, done) {
+    state.todos.forEach(item => item.done = done)
+
+    this.commit('saveTodo')
+  },
+
+  saveTodo (state) {
+    localStorage.setItem('todos', JSON.stringify(state.todos))
+  }
+}
+```
+
+
+
+
+
+
+
+
+
+
+
+## 15. 使用 Vue-cli 创建项目
+
+
+
+1. 在命令行中输入以下命令创建 Vue 项目：
+
+   ```bash
+   # 创建项目
+   
+   vue create element-class
+   ```
+
+   
+
+2. 选择安装预设
+
+   - Default ([Vue 3] babel, eslint)：基于 Vue 3 创建，同时选中 babel、eslint，回车之后直接进入装包
+
+   - Default ([Vue 2] babel, eslint)：基于 Vue 2 创建，同时选中 babel、eslint，回车之后直接进入装包
+
+   - Manually select features：自定义勾选特性配置，选择完毕之后，才会进入装包
+
+   - **推荐选择第 3 种：手动选择特性，支持更多自定义选项**
+
+     <img src="./images/01.png" style="zoom:80%; border: 1px solid #ddd" />
+
+
+
+
+
+3. 安装项目中需要使用的库以及功能，分别选择以下几个模块
+
+   - `Babel`：`es6` 转 `es5`
+
+   - `Router`：路由，会根据选择的 Vue 安装对应的 Vue router 版本
+
+   - `Vuex`：状态管理库，存储共享数据，会根据选择的 Vue 安装对应的 Vuex 版本，
+
+   - `CSS Pre-processors`：`CSS`预处理器，后面会提示你选择 `less`、`sass`、`stylus` 等
+
+   - `Linter / Formatter`：代码格式校验 **如果不需要选择任何格式规范，可以取消默认勾选 **
+
+     <img src="./images/02.png" style="zoom:80%; border: 1px solid #ddd" />
+
+   
+
+4. 选择 Vue 的版本
+
+   - `2.x` ： 选择 Vue 2 的版本进行项目创建
+
+     <img src="./images/03.png" style="zoom:80%; border: 1px solid #ddd" />
+
+   
+
+5. 配置路由模式
+
+   - 是否使用 `history` 路由模式，这里输入 `n` 不使用
+   - 后期我们可以根据自己更改和配置
+
+   <img src="./images/05.png" style="zoom:80%; border: 1px solid #ddd" />
+
+   
+
+6. 选择 `CSS` 预处理器
+
+   - 选择 `Less`，之前我们主要学习的 Less ，相对熟悉一点
+
+   <img src="./images/04.png" style="zoom:80%; border: 1px solid #ddd" />
+
+   
+
+7. 选择代码格式规范
+
+   - 选择 `ESLint` + [Standard config](https://standardjs.com/)
+   - 如果不需要选择任何格式规范，可以在选择的时候取消掉 
+
+   <img src="./images/06.png" style="zoom:80%; border: 1px solid #ddd" />
+
+   
+
+8. 选择在什么时机下触发代码格式校验
+
+   - Lint on save：每当保存文件的时候
+   - Lint and fix on commit：每当执行 `git commit` 提交的时候
+   - **这里建议两个都选上，更严谨**
+
+   <img src="./images/07.png" style="zoom:80%; border: 1px solid #ddd" />
+
+
+
+
+8. 额外的配置文件的配置
+
+   - `Babel`、`ESLint` 等工具会有一些额外的配置文件，需要将这些工具相关的配置文件写到哪里
+     - `In dedicated config files`：分别保存到单独的配置文件
+     - `In package.json`：保存到 `package.json` 文件中
+   - 里建议选择第 `1` 个，保存到单独的配置文件，这样方便我们做自定义配置
+
+   - **这里建议两个都选上，更严谨**
+
+   <img src="./images/08.png" style="zoom:80%; border: 1px solid #ddd" />
+
+   
+
+9. 是否保存配置预设
+
+   - 是否需要将刚才选择一系列配置保存起来，并可以帮我们记住上面的一系列选择，以便下次直接复用
+   - 输入 `y` 或者 `n`，我这里输入 `n` ，不保存
+
+   <img src="./images/09.png" style="zoom:80%; border: 1px solid #ddd" />
+
+   
+
+10. 安装向导配置结束后，开始装包，安装包的时间因为网络的原因，可能会比较长，请耐心等待~~~~
+
+    <img src="./images/10.png" style="zoom:80%; border: 1px solid #ddd" />
+
+
+​    
+
+11. 安装结束，命令提示你项目创建成功，按照命令行的提示在终端中分别输入
+
+    <img src="./images/11.png" style="zoom:80%; border: 1px solid #ddd" />
+
+    
+
+12. 进入你的项目目录，并启动项目
+
+    <img src="./images/12.png" style="zoom:80%; border: 1px solid #ddd" />
+
+
+
+13.  项目运行成功
+
+     - 启动成功，命令行中显示项目的运行地址
+
+- 打开浏览器，输入其中任何一个地址进行访问
+
+  <img src="./images/13.png" style="zoom:80%; border: 1px solid #ddd" />
+
+​     
+
+14. 如果能看到该页面，表示项目创建成功了
+
+    <img src="./images/14.png" style="zoom:80%; border: 1px solid #ddd" />
+
+
+
+
+
+
+
+## 16. Standard 代码规范介绍(  重要 ！) ⭐
+
+
+
+官方地址：[Standard](https://github.com/standard/standard)
+
+中文地址：[Standard](https://github.com/standard/standard/blob/master/docs/README-zhcn.md)
+
+详细地址：[Standard 详细规范](https://github.com/standard/standard/blob/master/docs/RULES-zhcn.md#javascript-standard-style)
+
+
+
+**几个重要的代码准则**
+
+
+
+- **使用两个空格** – 进行缩进
+
+- **字符串使用单引号** – 需要转义的地方除外
+- **不再有冗余的变量** – 这是导致 *大量* bug 的源头!
+- **无分号** – [这](http://blog.izs.me/post/2353458699/an-open-letter-to-javascript-leaders-regarding)[没什么不好。](https://web.archive.org/web/20201206065632/http://inimino.org/~inimino/blog/javascript_semicolons)[不骗你！](https://www.youtube.com/watch?v=gsfbh17Ax9I)
+- 行首不要以 `(`, `[`, or ``` 开头
+- **关键字后加空格** `if (condition) { ... }`
+- **函数名后加空格** `function name (arg) { ... }`
+- 坚持使用全等 `===` 摒弃 `==` 
 
 
 
