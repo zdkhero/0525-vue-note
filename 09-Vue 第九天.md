@@ -1823,7 +1823,7 @@ let mutations = {
 
 - **使用两个空格** – 进行缩进
 
-- **字符串使用单引号** – 需要转义的地方除外
+- **js 字符串使用单引号** – 需要转义的地方除外
 - **不再有冗余的变量** – 这是导致 *大量* bug 的源头!
 - **无分号** – [这](http://blog.izs.me/post/2353458699/an-open-letter-to-javascript-leaders-regarding)[没什么不好。](https://web.archive.org/web/20201206065632/http://inimino.org/~inimino/blog/javascript_semicolons)[不骗你！](https://www.youtube.com/watch?v=gsfbh17Ax9I)
 - 行首不要以 `(`, `[`, or ``` 开头

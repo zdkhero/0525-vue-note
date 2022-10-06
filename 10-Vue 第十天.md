@@ -6,13 +6,13 @@
 
 
 
-Vue Router 是 [Vue.js (opens new window)](http://cn.vuejs.org/)官方的路由管理器。它和 Vue.js 的核心深度集成，
-
 
 
 1. 什么是路由 ？ 路由就是一种对应的关系、映射的关系 
 
-   
+   - 通过路径来响应对应的组件、模块
+
+    
 
 2. 前端路由 ？
 
@@ -22,11 +22,17 @@ Vue Router 是 [Vue.js (opens new window)](http://cn.vuejs.org/)官方的路由�
 
 3. 什么是 SPA 单页面应用：
 
-   一个 web 应用网站只有一个 HTML 页面，这个应用中所有组件的展示和切换都在这一个唯一的一个页面内完成，此时，不同组件之间的切换需要通过前端路由来实现！
+   - 一个 web 应用网站只有一个 HTML 页面，
+   - 应用中所有组件的展示和切换都在这一个唯一的一个页面内完成，此时，不同组件之间的切换需要通过前端路由来实现
+   - 点击页面中的链接不会刷新页面, 本身也不会向服务器发请求新页面
+   - 当点击路由链接时，只会做页面的局部更新，网址也会对应的改变
+   - 数据都需要通过ajax请求获取，并在前端异步展现
 
 
 
-![](./images/路由对应关系.png)
+4. Vue Router 是 [Vue.js (opens new window)](http://cn.vuejs.org/)官方的路由管理器。它和 Vue.js 的核心深度集成，
+
+<img src="./images/路由对应关系.png" style="zoom:80%;" />
 
 
 
@@ -208,7 +214,7 @@ export default {
        <div class="main">
          <!-- 使用 router-view 占位，展示路由对应的组件 -->
          <router-view></router-view>
-    </div>
+   	</div>
      </div>
    </template>
    
@@ -300,8 +306,8 @@ export default {
 
 **知识点：**
 
-1. 路由组件通常存放在 `pages` 文件夹，一般组件通常存放在 `components` 文件夹
-2. 通过切换，将 "离开" 的路由组件进行销魂，注意：默认是被销毁掉的，需要的时候再去挂载
+1. 路由对应组件通常存放在 `pages` 或者 `views` 文件夹，公用复用组件通常存放在 `components` 文件夹
+2. 通过切换，将 "离开" 的路由组件进行销毁，注意：默认是被销毁掉的，需要的时候再去挂载
 3. 组件实例的 "$route" 属性：存储着当前路由信息(路径、参数...... 等等)
 4. 组件实例的 "$router" 属性：整个应用的路由器，后期可以通过它进行很多高级的操作
 
@@ -343,7 +349,7 @@ export default {
 
 **实现步骤**
 
-1. 在 `Good` 目录下新建两个组件 `AddGood/index.vue`、`GoodList/Person.vue` 组件
+1. 在 `Good` 目录下新建两个组件 `/AddGood/index.vue`、`/GoodList/Person.vue` 组件
 2. 配置路由规则，使用`children`配置子路由
 3. 在 `Good/index.vue` 组件中设置跳转路由，注意：要加父级路径
 4. 在`Good/index.vue`组件中预留一个`<router-view>`
@@ -1201,7 +1207,7 @@ goDetail(item) {
 
 
 
-## 16. history 与 hash 模式
+## 15. history 与 hash 模式
 
 1. <font color="red">history（美观，兼容性略差）—— 推荐使用</font>。
 
